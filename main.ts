@@ -1,41 +1,123 @@
 const hosts: Record<string, string> = {
-  'target.local': '127.0.0.1',
-  'admin.internal': '10.0.0.1',
-  'api.internal': '10.0.0.2',
-  'db.internal': '10.0.0.3',
-  'localhost': '127.0.0.1',
-  '127.0.0.1': '127.0.0.1',
+  "target.local": "127.0.0.1",
+  "admin.internal": "10.0.0.1",
+  "api.internal": "10.0.0.2",
+  "db.internal": "10.0.0.3",
+  "localhost": "127.0.0.1",
+  "127.0.0.1": "127.0.0.1",
+};
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+  "Access-Control-Allow-Headers": "*",
+  "Access-Control-Allow-Private-Network": "true",
 };
 
 Deno.serve((req: Request) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { status: 204, headers: corsHeaders });
+
+  if (req.method === "OPTIONS") {
+    return new Response(null,{status:204,headers:corsHeaders});
   }
 
-  const host = (req.headers.get('host') || req.headers.get('x-forwarded-host') || '').split(':')[0].toLowerCase();
-  const ip = hosts[host] || '127.0.0.1';
+  const host =
+    (req.headers.get("host") ||
+    req.headers.get("x-forwarded-host") ||
+    "").split(":")[0].toLowerCase();
 
-  const accept = req.headers.get('accept') || '';
-  if (accept.includes('html')) {
+  const ip = hosts[host] || "127.0.0.1";
+
+  const accept = req.headers.get("accept") || "";
+
+  if (accept.includes("html")) {
     return new Response(`
-      <html><body style="font-family:monospace;padding:2em;">
-        <h1>🚀 Ultra Fast Hosts (14ms edge)</h1>
-        <p><strong>Host:</strong> ${host}</p>
-        <p><strong>IP:</strong> <code style="font-size:2em;background:#000;color:#0f0;padding:0.5em">${ip}</code></p>
-        <details><summary>Test domains:</summary>
-          <code>target.local → 127.0.0.1<br>
-          admin.internal → 10.0.0.1<br>
-          api.internal → 10.0.0.2</code>
-        </details>
-      </body></html>
-    `, { headers: { ...corsHeaders, 'Content-Type': 'text/html' } });
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Ultra Fast Edge Server</title>
+
+<style>
+body{
+background:#0d1117;
+color:#e6edf3;
+font-family:Arial;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+margin:0;
+}
+
+.card{
+background:#161b22;
+padding:40px;
+border-radius:12px;
+box-shadow:0 10px 40px rgba(0,0,0,.6);
+width:420px;
+text-align:center;
+}
+
+h1{
+margin-top:0;
+color:#58a6ff;
+}
+
+.ip{
+font-size:28px;
+background:#010409;
+padding:10px;
+border-radius:6px;
+margin:15px 0;
+color:#3fb950;
+}
+
+.list{
+text-align:left;
+background:#010409;
+padding:15px;
+border-radius:6px;
+font-family:monospace;
+}
+
+footer{
+margin-top:20px;
+font-size:12px;
+opacity:.6;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="card">
+<h1>Ultra Fast Edge</h1>
+
+<p>Detected Host</p>
+<div class="ip">${host}</div>
+
+<p>Resolved IP</p>
+<div class="ip">${ip}</div>
+
+<div class="list">
+target.local  -> 127.0.0.1<br>
+admin.internal -> 10.0.0.1<br>
+api.internal  -> 10.0.0.2<br>
+db.internal   -> 10.0.0.3
+</div>
+
+<footer>Deno Edge Server</footer>
+</div>
+
+</body>
+</html>
+`,{
+headers:{...corsHeaders,"content-type":"text/html"}
+});
   }
 
-  return new Response(ip, { headers: { ...corsHeaders, 'Content-Type': 'text/plain' } });
+  return new Response(ip,{
+headers:{...corsHeaders,"content-type":"text/plain"}
 });
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
-  'Access-Control-Allow-Headers': 'Host,X-Forwarded-Host,Content-Type',
-};
+});
