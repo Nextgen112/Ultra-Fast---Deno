@@ -1,41 +1,55 @@
-const hosts: Record<string, string> = {
-  "target.local": "127.0.0.1",
-  "admin.internal": "10.0.0.1",
-  "api.internal": "10.0.0.2",
-  "db.internal": "10.0.0.3",
-  "localhost": "127.0.0.1",
-  "127.0.0.1": "127.0.0.1",
-};
-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers": "*",
   "Access-Control-Allow-Private-Network": "true",
 };
 
 Deno.serve((req: Request) => {
 
+  // Handle CORS preflight
   if (req.method === "OPTIONS") {
-    return new Response(null,{status:204,headers:corsHeaders});
+    return new Response(null, {
+      status: 204,
+      headers: corsHeaders
+    });
   }
 
-  const host =
-    (req.headers.get("host") ||
-    req.headers.get("x-forwarded-host") ||
-    "").split(":")[0].toLowerCase();
+  const url = new URL(req.url);
 
-  const ip = hosts[host] || "127.0.0.1";
+  // -----------------------------
+  // VIP SCRIPT
+  // -----------------------------
+  if (url.pathname === "/Public/VIP.js") {
 
-  const accept = req.headers.get("accept") || "";
+    const js = `
+console.log("VIP script loaded from Deno server");
 
-  if (accept.includes("html")) {
-    return new Response(`
+// Example code
+window.NEXTGEN_VIP = true;
+
+console.log("NextGen VIP active");
+`;
+
+    return new Response(js, {
+      headers: {
+        ...corsHeaders,
+        "content-type": "application/javascript"
+      }
+    });
+  }
+
+  // -----------------------------
+  // HOME PAGE
+  // -----------------------------
+  if (url.pathname === "/") {
+
+    const html = `
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Ultra Fast Edge Server</title>
+<title>Deno VIP Server</title>
 
 <style>
 body{
@@ -63,27 +77,12 @@ margin-top:0;
 color:#58a6ff;
 }
 
-.ip{
-font-size:28px;
+.code{
 background:#010409;
-padding:10px;
-border-radius:6px;
-margin:15px 0;
-color:#3fb950;
-}
-
-.list{
-text-align:left;
-background:#010409;
-padding:15px;
+padding:12px;
 border-radius:6px;
 font-family:monospace;
-}
-
-footer{
-margin-top:20px;
-font-size:12px;
-opacity:.6;
+margin-top:10px;
 }
 </style>
 
@@ -92,32 +91,36 @@ opacity:.6;
 <body>
 
 <div class="card">
-<h1>Ultra Fast Edge</h1>
+<h1>Deno VIP Server</h1>
 
-<p>Detected Host</p>
-<div class="ip">${host}</div>
+<p>Server running successfully.</p>
 
-<p>Resolved IP</p>
-<div class="ip">${ip}</div>
+<p>VIP Script URL:</p>
 
-<div class="list">
-target.local  -> 127.0.0.1<br>
-admin.internal -> 10.0.0.1<br>
-api.internal  -> 10.0.0.2<br>
-db.internal   -> 10.0.0.3
+<div class="code">
+/Public/VIP.js
 </div>
 
-<footer>Deno Edge Server</footer>
 </div>
 
 </body>
 </html>
-`,{
-headers:{...corsHeaders,"content-type":"text/html"}
-});
+`;
+
+    return new Response(html, {
+      headers: {
+        ...corsHeaders,
+        "content-type": "text/html"
+      }
+    });
   }
 
-  return new Response(ip,{
-headers:{...corsHeaders,"content-type":"text/plain"}
-});
+  // -----------------------------
+  // DEFAULT RESPONSE
+  // -----------------------------
+  return new Response("404 Not Found", {
+    status: 404,
+    headers: corsHeaders
+  });
+
 });
