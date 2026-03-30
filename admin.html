@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.3/socket.io.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Admin Dashboard</h1>
+    </header>
+
+    <main>
+        <section id="login">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <input type="text" id="username" placeholder="Username" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button type="submit">Login</button>
+            </form>
+        </section>
+
+        <section id="dashboard" style="display:none;">
+            <h2>Dashboard</h2>
+            <div id="visitorTracking">
+                <h3>Real-time Visitor Tracking</h3>
+                <ul id="visitorList"></ul>
+            </div>
+            <div id="ipLogging">
+                <h3>Logged IP Addresses</h3>
+                <ul id="ipList"></ul>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const socket = io('https://your-server-url'); // Replace with your socket server URL
+
+        // Login Handler
+        $('#loginForm').submit(function(event) {
+            event.preventDefault();
+            // Perform authentication
+            // If successful:
+            $('#login').hide();
+            $('#dashboard').show();
+        });
+
+        // Real-time visitor tracking
+        socket.on('visitor', function(data) {
+            $('#visitorList').append('<li>' + data.visitorName + '</li>');
+        });
+
+        // IP address logging
+        socket.on('ipLog', function(ip) {
+            $('#ipList').append('<li>' + ip + '</li>');
+        });
+
+        // Blocking system (example)
+        function blockUser(ip) {
+            // Implement your blocking logic here
+            console.log('Blocked IP:', ip);
+        }
+
+        // Browser notifications
+        if (Notification.permission !== 'granted') {
+            Notification.requestPermission();
+        }
+
+        function notify(message) {
+            if (Notification.permission === 'granted') {
+                new Notification('Admin Dashboard', { body: message });
+            }
+        }
+    </script>
+</body>
+</html>
