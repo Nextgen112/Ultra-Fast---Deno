@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>K-S Allies Tag Checker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+    background:#000;
+    color:#00ff00;
+    font-family:Consolas,monospace;
+    display:flex;
+    justify-content:center;
+    padding:30px;
+}
+.box{
+    width:420px;
+    border:2px solid #00ff00;
+    padding:20px;
+    box-shadow:0 0 20px #00ff00;
+}
+h1{text-align:center;margin-bottom:15px;}
+input,button{
+    width:100%;
+    padding:10px;
+    margin-top:8px;
+    background:#000;
+    color:#00ff00;
+    border:1px solid #00ff00;
+}
+button{
+    background:#00ff00;
+    color:#000;
+    font-weight:bold;
+    cursor:pointer;
+}
+button:hover{background:#00cc00}
+.status{
+    margin-top:12px;
+    min-height:20px;
+}
+.section{
+    margin-top:20px;
+    font-size:13px;
+}
+.email{
+    margin-top:25px;
+    text-align:center;
+}
+.email a{
+    color:#000;
+    background:#00ff00;
+    padding:10px 15px;
+    display:inline-block;
+    text-decoration:none;
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+<div class="box">
+
+<h1>🟢 K-S ALLIES CHECKER 🟢</h1>
+
+<input id="tag" placeholder="Enter Tag (max 6)">
+<button onclick="checkTag()">CHECK TAG</button>
+
+<div class="status" id="status"></div>
+
+<div class="section">
+<b>Approved Allies:</b><br>
+DRAM, K-S, KS01, ALPHA, TEAM7, HAMAA
+</div>
+
+<div class="email">
+<p>Want to join K-S alliance?</p>
+<a href="mailto:hamaali005566@gmail.com?subject=K-S Join Request&body=Hello, I want to join K-S alliance. My tag is:">
+📩 SEND EMAIL REQUEST
+</a>
+</div>
+
+</div>
+
+<script>
+/* ====== ALLIES ONLY (6 TAGS) ====== */
+const ALLIES = [
+  "DRAM",
+  "K-S",
+  "KS01",
+  "ALPHA",
+  "TEAM7",
+  "HAMAA"
+];
+
+function checkTag(){
+    const input = document.getElementById("tag");
+    const status = document.getElementById("status");
+    const tag = input.value.trim().toUpperCase();
+
+    // allow A-Z, 0-9, and -
+    if(!/^[A-Z0-9-]{1,6}$/.test(tag)){
+        status.textContent = "❌ Invalid tag (max 6, letters/numbers/-)";
+        return;
+    }
+
+    if(ALLIES.includes(tag)){
+        status.textContent = "🟢 ALLY CONFIRMED";
+    }else{
+        status.textContent = "⚪ NOT IN ALLIES LIST";
+    }
+}
+</script>
+
+</body>
+</html>
