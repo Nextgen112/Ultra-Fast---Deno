@@ -3,42 +3,329 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Ultra Fast Deno</title>
-    <script>
-        // Visitor counter tracking
-        let visitorCount = localStorage.getItem('visitorCount') || 0;
-        visitorCount++;
-        localStorage.setItem('visitorCount', visitorCount);
-        window.onload = function() {
-            document.getElementById('visitorCount').textContent = visitorCount;
-        };
-    </script>
+    <title>NextGen Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-box {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 450px;
+            border: 2px solid #667eea;
+        }
+
+        .login-box h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.7rem;
+            color: #b0b0b0;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid #667eea;
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            background: rgba(102, 126, 234, 0.2);
+            box-shadow: 0 0 15px rgba(102, 126, 234, 0.5);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
+        }
+
+        .dashboard {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .dashboard-header {
+            background: rgba(0, 0, 0, 0.95);
+            padding: 1.5rem 2rem;
+            border-bottom: 2px solid #667eea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dashboard-header h1 {
+            color: #667eea;
+            font-size: 1.8rem;
+        }
+
+        .logout-btn {
+            padding: 10px 20px;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .dashboard-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: rgba(102, 126, 234, 0.05);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .visitor-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 3px solid #667eea;
+        }
+
+        .error-message {
+            color: #f44336;
+            text-align: center;
+            margin-top: 1rem;
+            display: none;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to Ultra Fast Deno!</h1>
+    <!-- Login Screen -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-box">
+            <h1>🔐 NextGen Admin</h1>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" placeholder="admin" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="login-btn">Login</button>
+                <div class="error-message" id="errorMessage">Invalid credentials!</div>
+            </form>
+        </div>
+    </div>
 
-    <section>
-        <h2>Login Form</h2>
-        <form id="loginForm">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
-            <br>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-            <br>
-            <button type="submit">Login</button>
-        </form>
-    </section>
+    <!-- Dashboard -->
+    <div class="dashboard" id="dashboard">
+        <div class="dashboard-header">
+            <h1>📊 Dashboard</h1>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
 
-    <section>
-        <h2>Join Us</h2>
-        <p>Become a part of our community by signing up today!</p>
-        <button onclick="alert('Thank you for joining us!')">Join Now</button>
-    </section>
+        <div class="dashboard-content">
+            <div class="card">
+                <h2>👥 Visitor Statistics</h2>
+                <div class="stat-box">
+                    <div class="stat-number" id="totalVisitors">0</div>
+                    <div>Total Visits</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="uniqueVisitors">0</div>
+                    <div>Unique IPs</div>
+                </div>
+            </div>
 
-    <section>
-        <h2>Visitor Count</h2>
-        <p>Visitors: <span id="visitorCount">0</span></p>
-    </section>
+            <div class="card">
+                <h2>🌍 IP Tracking</h2>
+                <div id="ipList"></div>
+            </div>
+
+            <div class="card">
+                <h2>🚫 Block IP</h2>
+                <input type="text" id="blockIpInput" placeholder="Enter IP">
+                <button onclick="blockIP()" style="width: 100%; padding: 10px; margin-top: 10px; background: #f44336; color: white; border: none; border-radius: 8px; cursor: pointer;">Block</button>
+                <div id="blockedList" style="margin-top: 1rem;"></div>
+            </div>
+
+            <div class="card">
+                <h2>📥 Export Data</h2>
+                <button onclick="exportData()" style="width: 100%; padding: 10px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer;">Download JSON</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ADMIN_USER = 'admin';
+        const ADMIN_PASS = 'nextgen2026';
+
+        let visitors = JSON.parse(localStorage.getItem('visitors')) || [];
+        let blockedIPs = JSON.parse(localStorage.getItem('blocked')) || [];
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === ADMIN_USER && password === ADMIN_PASS) {
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                loadDashboard();
+            } else {
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        });
+
+        function loadDashboard() {
+            trackVisitor();
+            updateStats();
+            setInterval(trackVisitor, 10000);
+        }
+
+        function trackVisitor() {
+            fetch('https://api.ipify.org?format=json')
+                .then(res => res.json())
+                .then(data => {
+                    const ip = data.ip;
+                    if (!blockedIPs.includes(ip)) {
+                        visitors.push({ ip, time: new Date().toLocaleString() });
+                        localStorage.setItem('visitors', JSON.stringify(visitors));
+                        updateStats();
+                    }
+                });
+        }
+
+        function updateStats() {
+            const uniqueIPs = [...new Set(visitors.map(v => v.ip))];
+            document.getElementById('totalVisitors').textContent = visitors.length;
+            document.getElementById('uniqueVisitors').textContent = uniqueIPs.length;
+
+            const ipList = document.getElementById('ipList');
+            ipList.innerHTML = visitors.slice().reverse().slice(0, 5).map(v => `
+                <div class="visitor-item">
+                    <strong>${v.ip}</strong> - ${v.time}
+                </div>
+            `).join('');
+
+            updateBlockedList();
+        }
+
+        function blockIP() {
+            const ip = document.getElementById('blockIpInput').value;
+            if (ip && !blockedIPs.includes(ip)) {
+                blockedIPs.push(ip);
+                localStorage.setItem('blocked', JSON.stringify(blockedIPs));
+                document.getElementById('blockIpInput').value = '';
+                updateBlockedList();
+            }
+        }
+
+        function updateBlockedList() {
+            const blockedList = document.getElementById('blockedList');
+            blockedList.innerHTML = blockedIPs.map(ip => `
+                <div class="visitor-item">
+                    🔒 ${ip} <button onclick="unblockIP('${ip}')" style="float: right; background: #4caf50; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">Unblock</button>
+                </div>
+            `).join('');
+        }
+
+        function unblockIP(ip) {
+            blockedIPs = blockedIPs.filter(item => item !== ip);
+            localStorage.setItem('blocked', JSON.stringify(blockedIPs));
+            updateBlockedList();
+        }
+
+        function exportData() {
+            const data = { visitors, blockedIPs };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `data-${Date.now()}.json`;
+            a.click();
+        }
+
+        function logout() {
+            document.getElementById('loginContainer').style.display = 'flex';
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('loginForm').reset();
+        }
+    </script>
 </body>
 </html>
