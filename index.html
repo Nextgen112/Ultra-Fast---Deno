@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Ultra Fast Deno</title>
+    <script>
+        // Visitor counter tracking
+        let visitorCount = localStorage.getItem('visitorCount') || 0;
+        visitorCount++;
+        localStorage.setItem('visitorCount', visitorCount);
+        window.onload = function() {
+            document.getElementById('visitorCount').textContent = visitorCount;
+        };
+    </script>
+</head>
+<body>
+    <h1>Welcome to Ultra Fast Deno!</h1>
+
+    <section>
+        <h2>Login Form</h2>
+        <form id="loginForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <br>
+            <button type="submit">Login</button>
+        </form>
+    </section>
+
+    <section>
+        <h2>Join Us</h2>
+        <p>Become a part of our community by signing up today!</p>
+        <button onclick="alert('Thank you for joining us!')">Join Now</button>
+    </section>
+
+    <section>
+        <h2>Visitor Count</h2>
+        <p>Visitors: <span id="visitorCount">0</span></p>
+    </section>
+</body>
+</html>
