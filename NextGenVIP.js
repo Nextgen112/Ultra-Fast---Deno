@@ -1,0 +1,1 @@
+// Content of VIP.js file (copy it here)
